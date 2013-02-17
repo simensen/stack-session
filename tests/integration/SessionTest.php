@@ -2,23 +2,20 @@
 
 namespace integration;
 
-use Pimple;
+use shared\Sessionify;
 use Stack\CallableHttpKernel;
-use Stack\Session;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage;
 use Symfony\Component\HttpKernel\Client;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class SessionTest extends \PHPUnit_Framework_TestCase
 {
-    private $mockFileSessionStorage;
+    use Sessionify;
 
     public function setUp()
     {
-        $this->mockFileSessionStorage = new MockFileSessionStorage();
+        $this->setUpMockFileSessionStorage();
     }
 
     public function testDefaultSetsNoCookies()
@@ -153,16 +150,5 @@ class SessionTest extends \PHPUnit_Framework_TestCase
                 'lifetime' => -300,
             ]]],
         ];
-    }
-
-    private function sessionify(HttpKernelInterface $app, array $config = [])
-    {
-        $config = array_merge([
-            'session.storage' => Pimple::share(function () {
-                return $this->mockFileSessionStorage;
-            }),
-        ], $config);
-
-        return new Session($app, $config);
     }
 }
